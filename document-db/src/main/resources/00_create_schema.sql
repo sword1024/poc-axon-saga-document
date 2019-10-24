@@ -1,0 +1,2 @@
+CREATE USER doc WITH password 'doc';
+CREATE SCHEMA doc AUTHORIZATION doc;

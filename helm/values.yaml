@@ -1,0 +1,36 @@
+resources:
+  requests:
+    memory: 256M
+    cpu: 100m
+  limits:
+    memory: 512M
+    cpu: 500m
+environment: dev
+env:
+  - name: JAVA_OPTIONS
+    value: -Duser.timezone=Europe/Moscow -XX:+PrintFlagsFinal -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+  - name: datasource_username
+    valueFrom:
+      secretKeyRef:
+        name: document-secret
+        key: username
+  - name: datasource_password
+    valueFrom:
+      secretKeyRef:
+        name: document-secret
+        key: password
+configMaps:
+  - name: document
+    spring.kafka.consumer.group-id: poc-axon-saga
+    spring.datasource.url: jdbc:postgresql://postgresql-db:5432/pdb?currentSchema=doc
+    spring.datasource.hikari.connectionTimeout: '30000'
+    spring.kafka.bootstrap-servers: kafka-service:9092
+    logging.level.com.example.poc_axon_saga: INFO
+    logging.level.ROOT: INFO
+httpPort: 8080
+httpsPort: 0
+service:
+  type: ClusterIP
+  port: 80
+replicaCount: 1
+maxReplicaCount: 1
